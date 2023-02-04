@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
@@ -26,9 +26,19 @@ export const Login = () => {
     mode: "onChange",
   });
 
-  const onSubmit = (value) => {
-    dispatch(fetchAuth(value));
+  const onSubmit = async (value) => {
+    const data = await dispatch(fetchAuth(value));
+
+    if (!data.payload) {
+      return console.log("Не удалось авторизоваться");
+    }
+
+    if ("token" in data.payload) {
+      window.localStorage.setItem("token", data.payload.token);
+    }
   };
+
+  // useEffect(() => {}, []);
 
   if (isAuth) {
     return <Navigate to={"/"} />;

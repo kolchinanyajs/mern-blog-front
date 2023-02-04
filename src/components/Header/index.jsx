@@ -11,7 +11,10 @@ export const Header = () => {
   const dispatch = useDispatch();
   const isAuth = useSelector(selectIsAuth);
 
-  const onClickLogout = () => dispatch(logout());
+  const onClickLogout = () => {
+    dispatch(logout());
+    window.localStorage.removeItem("token");
+  };
 
   return (
     <div className={styles.root}>
