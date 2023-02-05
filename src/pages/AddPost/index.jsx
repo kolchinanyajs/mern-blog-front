@@ -8,25 +8,28 @@ import "easymde/dist/easymde.min.css";
 import styles from "./AddPost.module.scss";
 import { useSelector } from "react-redux";
 import { selectIsAuth } from "../../redux/slices/auth";
-import { Navigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import axios from "../../axios";
 
 export const AddPost = () => {
+  const navigate = useNavigate();
   const isAuth = useSelector(selectIsAuth);
 
   const [imageUrl, setImageUrl] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [value, setValue] = useState("");
+  const [text, setText] = useState("");
   const [title, setTitle] = useState("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState([]);
   const inputFileRef = useRef(null);
 
   const handleChangeFile = async (event) => {
     try {
       const formData = new FormData();
       const file = event.target.files[0];
+      console.log(file);
       formData.append("image", file);
       const { data } = await axios.post("/upload", formData);
+      console.log("data", data);
       setImageUrl(data.url);
     } catch (err) {
       console.warn(err);
@@ -39,8 +42,26 @@ export const AddPost = () => {
   };
 
   const onChange = React.useCallback((value) => {
-    setValue(value);
+    setText(value);
   }, []);
+
+  const onSubmit = async () => {
+    try {
+      setIsLoading(true);
+      const fields = {
+        title,
+        imageUrl,
+        tags,
+        text,
+      };
+      const { data } = await axios.post("/posts", fields);
+      const id = data._id;
+      navigate(`/posts/${id}`);
+    } catch (err) {
+      console.warn(err);
+      console.log("Ошибка при создание статьи");
+    }
+  };
 
   const options = React.useMemo(
     () => ({
@@ -89,7 +110,7 @@ export const AddPost = () => {
           </Button>
           <img
             className={styles.image}
-            src={`https://mern-blog-back-eptep1rtf-anakolchina97.vercel.app/${imageUrl}`}
+            src={`https://mern-blog-back.vercel.app/${imageUrl}`}
             alt="Uploaded"
           />
         </>
@@ -114,12 +135,12 @@ export const AddPost = () => {
       />
       <SimpleMDE
         className={styles.editor}
-        value={value}
+        value={text}
         onChange={onChange}
         options={options}
       />
       <div className={styles.buttons}>
-        <Button size="large" variant="contained">
+        <Button size="large" variant="contained" onClick={onSubmit}>
           Опубликовать
         </Button>
         <a href="/">
