@@ -41,7 +41,7 @@ export const Home = () => {
                 key={Math.random()}
                 id={obj._id}
                 title={obj.title}
-                imageUrl={obj.imageUrl}
+                imageUrl={obj.imageURL ? obj.imageURL : ""}
                 user={obj.user}
                 createdAt={obj.createdAt}
                 viewsCount={obj.viewsCount}
