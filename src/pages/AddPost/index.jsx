@@ -57,6 +57,7 @@ export const AddPost = () => {
       setIsLoading(true);
       const fields = {
         title,
+        tags,
         imageUrl,
         text,
       };
