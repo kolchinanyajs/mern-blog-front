@@ -26,11 +26,18 @@ export const AddPost = () => {
     try {
       const formData = new FormData();
       const file = event.target.files[0];
-      console.log(file);
-      formData.append("image", file);
-      const { data } = await axios.post("/upload", formData);
-      console.log("data", data);
-      setImageUrl(data.url);
+
+      function encodeImageFileAsURL(img) {
+        const file = img;
+        var reader = new FileReader();
+        reader.onloadend = function () {
+          return setImageUrl(reader.result);
+        };
+        return reader.readAsDataURL(file);
+      }
+
+      encodeImageFileAsURL(file);
+      formData.append("image", imageUrl);
     } catch (err) {
       console.warn(err);
       console.warn("Ошибка при загрузке файла");
@@ -51,7 +58,6 @@ export const AddPost = () => {
       const fields = {
         title,
         imageUrl,
-        tags,
         text,
       };
       const { data } = await axios.post("/posts", fields);
@@ -108,11 +114,7 @@ export const AddPost = () => {
           >
             Удалить
           </Button>
-          <img
-            className={styles.image}
-            src={`https://mern-blog-back.vercel.app/${imageUrl}`}
-            alt="Uploaded"
-          />
+          <img className={styles.image} src={`${imageUrl}`} alt="Uploaded" />
         </>
       )}
       <br />
